@@ -10,5 +10,7 @@ let gpx = new L.GPX(gpxFile, { async: true })
     map.fitBounds(e.target.getBounds());
   })
   .addTo(map);
-let popUp = L.popup();
+let popUp = L.popup().setContent(
+  "<p>Route description</p><p>Link to report</p>"
+);
 gpx.bindPopup(popUp);
