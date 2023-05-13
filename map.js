@@ -4,13 +4,12 @@ const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
-let gpxFile = "Mitryasov_Kamchatka_3pesh_2022.gpx";
-let gpx = new L.GPX(gpxFile, { async: true })
+let gpxPath = "Mitryasov_Kamchatka_3pesh_2022.gpx";
+let gpx = new L.GPX(gpxPath, { async: true })
   .on("loaded", function (e) {
     map.fitBounds(e.target.getBounds());
   })
   .addTo(map);
-let popUp = L.popup().setContent(
-  "<p>Route description</p><p>Link to report</p>"
-);
+let gpxName = gpxPath.slice(0, -4);
+let popUp = L.popup().setContent(`<p>${gpxName}</p><p>Link to report</p>`);
 gpx.bindPopup(popUp);
