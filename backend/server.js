@@ -7,7 +7,7 @@ const port = 3000;
 
 let JSONData;
 let r = new Promise(function (resolve, reject) {
-  fs.readFile("table.txt", "utf8", (err, data) => {
+  fs.readFile(".\\backend\\table.txt", "utf8", (err, data) => {
     if (err) {
       console.error(err);
     }
@@ -34,7 +34,7 @@ function Parse(str) {
   return JSON.stringify(route);
 }
 
-app.get("/getAllTracks", (req, res) => {
+app.get("/getAllRoutes", (req, res) => {
   res.send(JSONData);
 });
 
