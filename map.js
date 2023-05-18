@@ -7,7 +7,7 @@ const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
-getRoutesObject().then((routesObject) => AddTracks(routesObject));
+getRoutesObject().then((routesObject) => addTracks(routesObject));
 
 //получение названий треков и отчетов в виде объекта вида {"tr.gpx":"tr.pdf"}
 async function getRoutesObject() {
