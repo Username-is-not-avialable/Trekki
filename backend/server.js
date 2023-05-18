@@ -3,7 +3,13 @@ const fs = require("fs");
 const app = express();
 const port = 3000;
 
-// TODO: app.static(); // для отдачи статического контента
+var staticResponseOptions = {
+  setHeaders: function (res, path, stat) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  },
+};
+
+app.use(express.static("./backend/database", staticResponseOptions)); // для отдачи статического контента
 
 let JSONData;
 let r = new Promise(function (resolve, reject) {
@@ -35,6 +41,7 @@ function Parse(str) {
 }
 
 app.get("/getAllRoutes", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.send(JSONData);
 });
 
