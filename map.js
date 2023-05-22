@@ -21,9 +21,7 @@ async function addTracks(routesObject) {
   for (let gpx in routesObject) {
     console.log(rootURL + gpx);
     let track = new L.GPX(rootURL + gpx, { async: true })
-      .on("loaded", function (e) {
-        map.fitBounds(e.target.getBounds());
-      })
+      .on("loaded", function (e) {})
       .addTo(map);
     let trackName = gpx.slice(0, -4); //TODO: fix incorrect naming
     let reportPath = rootURL + routesObject[gpx];
