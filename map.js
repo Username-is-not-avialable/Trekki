@@ -1,6 +1,6 @@
 const rootURL = "http://localhost:3000/";
 
-const map = L.map("map").setView([51.5, 0], 12);
+const map = L.map("map").setView([56.840449, 60.657217], 9);
 const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
   attribution:
@@ -15,6 +15,8 @@ async function getRoutesObject() {
     method: "GET",
   }).then((response) => response.json()); // no error catching function in "then"
 }
+
+map.on("resize");
 
 async function addTracks(routesObject) {
   console.log(routesObject);
