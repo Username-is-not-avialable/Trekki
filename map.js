@@ -4,7 +4,8 @@ const rootURL = "http://localhost:3000/";
 main();
 async function main() {
   map = await setMap();
-  getRoutesObject().then((routesObject) => addTracks(routesObject, map));
+  routesObject = await getRoutesObject();
+  addTracks(routesObject, map);
 }
 
 async function setMap() {
@@ -25,9 +26,26 @@ async function getRoutesObject() {
 
 async function addTracks(routesObject, map) {
   console.log(routesObject);
+  let routeCounter = 0;
   for (let gpx in routesObject) {
+    routeCounter += 1;
     console.log(rootURL + gpx);
-    let track = new L.GPX(rootURL + gpx, { async: true, marker_options: {} });
+    let track = new L.GPX(rootURL + gpx, {
+      async: true,
+      marker_options: {
+        iconSize: [15, 20],
+        iconAnchor: [8, 20], // TODO: make shadows smaller
+      },
+      gpx_options: {
+        parseElements: ["track", "route"],
+      },
+      polyline_options: {
+        opacity: 1,
+        //color: "red",
+      },
+    });
+    // delete track.marker_options.icon.shadowUrl;
+    // delete track.marker_options.icon.shadowRetinaUrl;
     track.addTo(map);
     let trackName = gpx.slice(0, -4); //TODO: fix incorrect naming
     let reportPath = rootURL + routesObject[gpx];
@@ -36,5 +54,12 @@ async function addTracks(routesObject, map) {
   <p> <a href = ${reportPath}>Скачать отчёт</a> </p>`
     );
     track.bindPopup(popUp);
+    track.on("mouseover", (e) => {
+      e.layer.setStyle({ color: "red" });
+    });
+    track.on("mouseout", (e) => {
+      e.layer.setStyle({ color: "blue" });
+    });
   }
+  console.log(`${routeCounter} tracks loaded`);
 }
