@@ -1,6 +1,5 @@
 const rootURL = "http://localhost:3000/";
-//map.on("zoomend", () => alert("resized"));
-//получение названий треков и отчетов в виде объекта вида {"tr.gpx":"tr.pdf"}
+
 main();
 async function main() {
   map = await setMap();
@@ -18,6 +17,7 @@ async function setMap() {
   return map;
 }
 
+//получение названий треков и отчетов в виде объекта вида {"tr.gpx":"tr.pdf"}
 async function getRoutesObject() {
   return fetch(rootURL + "getAllRoutes", {
     method: "GET",
@@ -41,6 +41,7 @@ async function addTracks(routesObject, map) {
       },
       polyline_options: {
         opacity: 1,
+        weight: 3,
         //color: "red",
       },
     });
