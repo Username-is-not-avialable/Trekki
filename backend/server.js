@@ -37,7 +37,7 @@ function Parse(str) {
     let [trek, report] = TRPair.split(" ");
     route[trek] = report;
   }
-  return JSON.stringify(route);
+  return JSON.stringify(route); // fix: походы с одинаковыми треками перекрывают друг друга. Остается только последний отчет
 }
 
 app.get("/getAllRoutes", (req, res) => {
