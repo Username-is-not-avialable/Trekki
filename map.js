@@ -18,7 +18,94 @@ async function main() {
   map = await setMap();
   AddLayersControl(map);
   routesObject = await getRoutesObject();
-  addTracks(routesObject, map);
+  window.tracks = await addTracks(routesObject, map);
+  console.log(tracks);
+  let control = new MyControl();
+  control.addTo(map);
+}
+
+let MyControl = L.Control.extend({
+  options: {
+    position: "topright",
+  },
+
+  onAdd: function (map) {
+    var container = L.DomUtil.create("div", "filters-control");
+    let text = document.createElement("p");
+    text.innerHTML = "Категория сложности";
+    container.appendChild(text);
+
+    const checkbox0 = createCheckboxInput("некатегорийный", "0category");
+    const checkbox1 = createCheckboxInput("1", "1category");
+    const checkbox2 = createCheckboxInput("2", "2category");
+    const checkbox3 = createCheckboxInput("3", "3category");
+    const checkbox4 = createCheckboxInput("4", "4category");
+    const checkbox5 = createCheckboxInput("5", "5category");
+    const checkbox6 = createCheckboxInput("6", "6category");
+
+    container.appendChild(checkbox0);
+    container.appendChild(checkbox1);
+    container.appendChild(checkbox2);
+    container.appendChild(checkbox3);
+    container.appendChild(checkbox4);
+    container.appendChild(checkbox5);
+    container.appendChild(checkbox6);
+
+    return container;
+  },
+});
+
+async function ShowRoutes(category) {
+  let tracksFileNames = await fetch(rootURL + String(category) + "category", {
+    method: "GET",
+  }).then((response) => response.json());
+  for (let trackFileName of tracksFileNames) {
+    // TODO: rewrite using map
+    ShowTrack(trackFileName);
+  }
+}
+
+async function UnShowRoutes(category) {
+  let tracksFileNames = await fetch(rootURL + String(category) + "category", {
+    method: "GET",
+  }).then((response) => response.json());
+  for (let trackFileName of tracksFileNames) {
+    // TODO: rewrite using map
+    UnShowTrack(trackFileName);
+  }
+}
+
+function ShowTrack(trackFileName) {
+  console.log("adding" + `${trackFileName}`);
+  window.tracks[trackFileName].addTo(map);
+}
+function UnShowTrack(trackFileName) {
+  console.log("hiding" + `${trackFileName}`);
+  tracks[trackFileName].removeFrom(map);
+}
+
+function createCheckboxInput(labelText, value) {
+  const label = document.createElement("label");
+  const checkbox = document.createElement("input");
+
+  checkbox.id = "checkbox";
+  checkbox.type = "checkbox";
+  checkbox.name = "filter";
+  checkbox.value = value;
+  let category = Number(value[0]);
+  checkbox.onclick = function (elem) {
+    if (this.checked) {
+      ShowRoutes(category);
+    } else {
+      UnShowRoutes(category);
+    }
+  };
+
+  label.classList.add("radio-label");
+  label.textContent = labelText;
+  label.appendChild(checkbox);
+
+  return label;
 }
 
 //добавление переключателя слоев
@@ -26,7 +113,6 @@ function AddLayersControl(map) {
   let baseLayers = {
     OpenStreetMap: OSMLayer,
     OpenTopoMap: OpenTopoMapLayer,
-    // Yandex: YandexMap,
   };
   L.control.layers(baseLayers).addTo(map);
 }
@@ -44,17 +130,18 @@ async function getRoutesObject() {
   }).then((response) => response.json()); // no error catching function in "then"
 }
 
-async function addTracks(routesObject, map) {
-  console.log(routesObject);
-  let routeCounter = 0;
-  for (let gpx in routesObject) {
-    routeCounter += 1;
-    console.log(rootURL + gpx);
+async function addTracks(routesArray, map) {
+  let tracks = {};
+  for (let routeObj of routesArray) {
+    let gpx = Object.keys(routeObj)[0]; // TODO: replace routeObj destruction to for..of
+    report = Object.values(routeObj)[0];
     let track = new L.GPX(rootURL + gpx, {
       async: true,
       marker_options: {
         iconSize: [15, 20],
-        iconAnchor: [8, 20], // TODO: make shadows smaller
+        shadowSize: [22, 22],
+        iconAnchor: [8, 20],
+        shadowAnchor: [8, 20],
       },
       gpx_options: {
         parseElements: ["track", "route"],
@@ -62,17 +149,13 @@ async function addTracks(routesObject, map) {
       polyline_options: {
         opacity: 1,
         weight: 3,
-        //color: "red",
       },
-    });
-    // delete track.marker_options.icon.shadowUrl;
-    // delete track.marker_options.icon.shadowRetinaUrl;
-    track.addTo(map);
+    }); // TODO: delete shadows
     let trackName = gpx.slice(0, -4); //TODO: fix incorrect naming
-    let reportPath = rootURL + routesObject[gpx];
+    let reportPath = rootURL + report;
     let popUp = L.popup().setContent(
       `<p>${trackName}</p>
-  <p> <a href = ${reportPath}>Скачать отчёт</a> </p>`
+      <p> <a href = ${reportPath}>Скачать отчёт</a> </p>`
     );
     track.bindPopup(popUp);
     track.on("mouseover", (e) => {
@@ -81,6 +164,7 @@ async function addTracks(routesObject, map) {
     track.on("mouseout", (e) => {
       e.layer.setStyle({ color: "blue" });
     });
+    tracks[gpx] = track;
   }
-  console.log(`${routeCounter} tracks loaded`);
+  return tracks;
 }
