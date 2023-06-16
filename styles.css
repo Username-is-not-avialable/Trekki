@@ -17,7 +17,7 @@ html {
 }
 
 .filters-control {
-  width: 100px;
+  width: 150px;
   background-color: white;
   border: 1px solid black;
 }
@@ -29,4 +29,8 @@ html {
 .radio-label {
   display: block;
   margin-bottom: 5px;
+}
+
+#TitleControl {
+  font-weight: bold;
 }

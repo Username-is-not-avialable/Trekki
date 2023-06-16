@@ -33,6 +33,7 @@ let MyControl = L.Control.extend({
     var container = L.DomUtil.create("div", "filters-control");
     let text = document.createElement("p");
     text.innerHTML = "Категория сложности";
+    text.id = "TitleControl";
     container.appendChild(text);
 
     const checkbox0 = createCheckboxInput("некатегорийный", "0category");
