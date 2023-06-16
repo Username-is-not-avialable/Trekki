@@ -1,7 +1,7 @@
 const express = require("express");
-const fs = require("fs");
 const app = express();
 const port = 3000;
+const Datastore = require("nedb");
 
 var staticResponseOptions = {
   setHeaders: function (res, path, stat) {
@@ -9,42 +9,44 @@ var staticResponseOptions = {
   },
 };
 
-app.use(express.static("./backend/database", staticResponseOptions)); // для отдачи статического контента
+app.use(express.static(".\\database", staticResponseOptions)); // для отдачи статического контента
 
-let JSONData;
-let r = new Promise(function (resolve, reject) {
-  fs.readFile(".\\backend\\table.txt", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-    }
-    JSONData = Parse(data);
-  });
-  resolve(JSONData);
-});
-r.then(
-  (result) => {
-    JSONData = result;
-  },
-  (error) => {
-    console.log(error);
-  }
-);
+let db = new Datastore({ filename: "routes" });
+db.loadDatabase();
 
 function Parse(str) {
   trackReportPairs = str.split(",");
-  let route = {};
+  let routes = {};
   for (var TRPair of trackReportPairs) {
-    let [trek, report] = TRPair.split(" ");
-    route[trek] = report;
+    let [track, report] = TRPair.split(" ");
+    routes[track] = report;
   }
-  return JSON.stringify(route); // fix: походы с одинаковыми треками перекрывают друг друга. Остается только последний отчет
+  return JSON.stringify(routes); // fix: походы с одинаковыми треками перекрывают друг друга. Остается только последний отчет
 }
 
 app.get("/getAllRoutes", (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.send(JSONData);
+  db.find({}, function (err, docs) {
+    let routesJSON = docs.map(function (route) {
+      let trackFN = route.trackFileName;
+      let reportFN = route.reportFileName;
+      let routeJSON = {};
+      routeJSON[trackFN] = reportFN;
+      return routeJSON;
+    });
+    res.send(routesJSON);
+  });
+});
+
+app.get("/\\dcategory", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  let category = req.originalUrl[1];
+  db.find({ difficulty: Number(category) }, function (err, routes) {
+    let tracksNames = routes.map((route) => route.trackFileName);
+    res.send(tracksNames);
+  });
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`App listening on port ${port}`);
 });
