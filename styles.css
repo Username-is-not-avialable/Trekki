@@ -15,3 +15,18 @@ html {
   width: 100vw;
   display: flex;
 }
+
+.filters-control {
+  width: 100px;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.radio-wrapper {
+  margin-top: 10px;
+}
+
+.radio-label {
+  display: block;
+  margin-bottom: 5px;
+}
