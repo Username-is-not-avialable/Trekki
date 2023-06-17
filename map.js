@@ -143,6 +143,12 @@ async function addTracks(routesArray, map) {
         shadowSize: [22, 22],
         iconAnchor: [8, 20],
         shadowAnchor: [8, 20],
+        startIconUrl: "img/pin-icon-start.png",
+        endIconUrl: "img/pin-icon-end.png",
+        shadowUrl: "img/pin-shadow.png",
+        wptIconUrls: {
+          "": "img/pin-icon-wpt.png",
+        },
       },
       gpx_options: {
         parseElements: ["track", "route"],
