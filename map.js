@@ -16,12 +16,14 @@ const OpenTopoMapLayer = L.tileLayer(
 main();
 async function main() {
   map = await setMap();
+  map.attributionControl.setPrefix(`<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">Leaflet</a>`);
   AddLayersControl(map);
   routesObject = await getRoutesObject();
   window.tracks = await addTracks(routesObject, map);
   console.log(tracks);
   let control = new MyControl();
   control.addTo(map);
+
 }
 
 let MyControl = L.Control.extend({
