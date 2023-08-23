@@ -12,18 +12,27 @@ const OpenTopoMapLayer = L.tileLayer(
       'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
   }
 );
+const OSMOutdoorsLayer = L.tileLayer(
+  "https://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png",
+  {
+    maxZoom: 20,
+    attribution:
+      '<a href="https://www.thunderforest.com/maps/outdoors/">Thunderforest Outdoors</a>',
+  }
+);
 
 main();
 async function main() {
   map = await setMap();
-  map.attributionControl.setPrefix(`<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">Leaflet</a>`);
+  map.attributionControl.setPrefix(
+    `<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">Leaflet</a>`
+  );
   AddLayersControl(map);
   routesObject = await getRoutesObject();
   window.tracks = await addTracks(routesObject, map);
   console.log(tracks);
   let control = new MyControl();
   control.addTo(map);
-
 }
 
 let MyControl = L.Control.extend({
@@ -116,6 +125,7 @@ function AddLayersControl(map) {
   let baseLayers = {
     OpenStreetMap: OSMLayer,
     OpenTopoMap: OpenTopoMapLayer,
+    "OSM Outdoors": OSMOutdoorsLayer,
   };
   L.control.layers(baseLayers).addTo(map);
 }
